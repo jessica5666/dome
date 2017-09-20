@@ -1,0 +1,185 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>无标题文档</title>
+<link type="text/css" rel="stylesheet" href="style.css" />
+</head>
+<script type="text/javascript" src="move2（完美运动框架）.js" ></script>
+<script>
+window.onload = function(){
+	var oPic = document.getElementById('pic_list'); // 大图的div
+	var aPicLi = oPic.getElementsByTagName('li');  // 大图li
+	var aTextLi = document.getElementById('text_list').getElementsByTagName('li'); // 文字li
+	var aIcoLi = document.getElementById('ico_list').getElementsByTagName('li'); // 缩略图li
+	var oIcoUl = document.getElementById('ico_list').getElementsByTagName('ul')[0]; // 缩略图ul
+	var oBtnPrev = document.getElementById('btn_prev'); // 上一个按钮
+	var oBtnNext = document.getElementById('btn_next'); // 下一个按钮
+	
+	var iNowUlL = 0; // 点击左右按钮或自动播放时，ul 的 left 移动 iNowUlL 个 aIcoLi[0].offsetWidth 的宽
+	var iNow = 0; // iNow = this.index 当前显示图片或文字或缩略图的下标
+	
+	// 点击上一个
+	oBtnPrev.onclick = function(){
+		
+		if( iNowUlL > 0 ){
+			iNowUlL--;
+			
+			fixUlLeft();
+		}
+		
+	}
+	
+	function fixUlLeft(){
+		// 当iNowUlL！=0 时，上一个的按钮显示，iNowUlL==0 时，上一个的按钮变暗
+		oBtnPrev.className = iNowUlL==0?'btn':'btn showBtn';
+		// 同上反之
+		oBtnNext.className = iNowUlL==aIcoLi.length - 7?'btn':'btn showBtn';
+		
+		// 利用运动框架得出 ul 的 left 值，移动ul位置
+		// oIcoUl.style.left = -aIcoLi[0].offsetWidth * iNowUlL + 'px';
+		doMove( oIcoUl,{left:-aIcoLi[0].offsetWidth * iNowUlL} );
+	}
+	
+	// 点击下一个
+	oBtnNext.onclick = function(){
+		
+		if( iNowUlL < aIcoLi.length - 7 ){
+			iNowUlL++;
+			
+			fixUlLeft();
+		}
+		
+	}
+	
+	// 点击缩略图
+	for( var i=0;i<aIcoLi.length;i++ ){
+		aIcoLi[i].index = i; // 添加索引
+		aIcoLi[i].onclick = function(){
+			
+			if( iNow == this.index ){
+				return;
+			}
+			
+			iNow = this.index; // 点击缩略图的索引值
+			fnTab();
+			
+			doMove( aPicLi[iNow],{opacity:100} ); // 利用运动框架使图片切换时透明度由浅至深显示
+		}
+	}
+	
+	// 点击缩略图后大图、文字、缩略图样式的变化
+	function fnTab(){
+		// 清空图片的样式、透明度
+		for( var i=0;i<aIcoLi.length;i++ ){
+			aIcoLi[i].className = '';
+			aPicLi[i].style.filter = 'alpha(opacity=0)';
+			aPicLi[i].style.opacity = '0';
+			aTextLi[i].className = '';
+			// 点击时清除定时器，避免一个正在运动又点击了下一个会出的问题
+			clearInterval( aPicLi[i].timer );
+		}
+		
+		// 让当前大图、文字、缩略图显示
+		aIcoLi[iNow].className = 'active';
+		doMove( aPicLi[iNow],{opacity:100} );
+		aTextLi[iNow].className = 'show';
+	}
+	
+	// 自动播放
+	var timer = setInterval( autoPlay,1000 );
+	// 自动播放函数
+	function autoPlay(){
+		iNow++;  
+		
+		// 当前下标索引值 >= 图片个数，就让下标索引值 iNow=0 回到第一张
+		if(iNow >= aIcoLi.length){
+			iNow=0;
+		}
+		
+		if( iNow <= iNowUlL ){
+			iNowUlL = iNow;
+		}
+		else if( iNow >= iNowUlL+7 ){
+			iNowUlL = iNow - 6;
+		}
+		
+		fixUlLeft();
+		
+		fnTab();
+		
+	}
+	
+	// 鼠标移入时，停止自动播放
+	oPic.onmouseover = function(){
+		clearInterval( timer );
+	}
+	// 鼠标离开后，继续自动播放
+	oPic.onmouseout = function(){
+		timer = setInterval( autoPlay,1000 );
+	}
+	
+}
+</script>
+<body>
+	
+    <div id="wrap">
+    	<ul id="pic_list">
+        	<li style="z-index:2; opacity:1; fliter:alpha(opacity=100);"><a href="#"><img src="img/pic_1.jpg" /></a></li>
+            <li><a href="#"><img src="img/pic_2.jpg" /></a></li>
+            <li><a href="#"><img src="img/pic_3.jpg" /></a></li>
+            <li><a href="#"><img src="img/pic_4.jpg" /></a></li>
+            <li><a href="#"><img src="img/pic_5.jpg" /></a></li>
+            <li><a href="#"><img src="img/pic_6.jpg" /></a></li>
+            <li><a href="#"><img src="img/pic_7.jpg" /></a></li>
+            <li><a href="#"><img src="img/pic_8.jpg" /></a></li>
+            <li><a href="#"><img src="img/pic_9.jpg" /></a></li>
+            <li><a href="#"><img src="img/pic_10.jpg" /></a></li>
+            <li><a href="#"><img src="img/pic_11.jpg" /></a></li>
+            <li><a href="#"><img src="img/pic_12.jpg" /></a></li>
+            <li><a href="#"><img src="img/pic_13.jpg" /></a></li>
+            <li><a href="#"><img src="img/pic_14.jpg" /></a></li>
+        </ul>
+        
+        <ul id="text_list">
+        	<li class="show"><h2><a href="#">《武则天秘史》[至22集]姐姐与皇上偷情，媚娘抓奸在床...</a></h2></li>
+            <li><h2><a href="#">《无底洞》金钱、美女、权利、复仇等欲望让人不可自拔...</a></h2></li>
+            <li><h2><a href="#">《巴黎宝贝》邓超巴黎当奶爸，上演基情、卖萌、跨国恋..</a></h2></li>
+            <li><h2><a href="#">《我的女儿是花儿》[至3集]“富二代”冰王子恋上贫家女..</a></h2></li>
+            <li><h2><a href="#">《法证先锋3》[至26集]写字楼惊现“女僵尸”尸体！</a></h2></li>
+            <li><h2><a href="#">《非常了得》孟非郭德纲大曝台下私生活，内地Hold姐来挑战</a></h2></li>
+            <li><h2><a href="#">第二届九分钟电影11月20日独家首映 视觉盛宴恭迎各位看官</a></h2></li>
+            <li><h2><a href="#">《快女微电影》 洪辰脸伤痊愈 快女微电影收官作复拍</a></h2></li>
+            <li><h2><a href="#">《称心如意》京城第一“育婴男”Hold住全场 萝莉热舞走光</a></h2></li>
+            <li><h2><a href="#">《男人帮》[全30集]悲喜双响炮，一个完美结局</a></h2></li>
+            <li><h2><a href="#">《辛亥革命》成龙、赵文瑄、李冰冰、胡歌演绎革命腥风血雨</a></h2></li>
+            <li><h2><a href="#">《李献计历险记》房祖名患差时症为寻女友开启超时空冒险</a></h2></li>
+            <li><h2><a href="#">Justin bieber女友动感热单全球首发。</a></h2></li>
+            <li><h2><a href="#">第八届中国（重庆）国际园林博览会</a></h2></li>
+        </ul>
+        
+        <div id="ico_list">
+        	<ul style="left=0;">
+                <li class="active"><a href="#"><img src="img/ico_1.jpg" alt="妙味课堂富有人性化的IT培训"/></a></li>
+                <li><a href="#"><img src="img/ico_2.jpg" alt="妙味课堂富有人性化的IT培训"/></a></li>
+                <li><a href="#"><img src="img/ico_3.jpg" alt="妙味课堂富有人性化的IT培训"/></a></li>
+                <li><a href="#"><img src="img/ico_4.jpg" alt="妙味课堂富有人性化的IT培训"/></a></li>
+                <li><a href="#"><img src="img/ico_5.jpg" alt="妙味课堂富有人性化的IT培训"/></a></li>
+                <li><a href="#"><img src="img/ico_6.jpg" alt="妙味课堂富有人性化的IT培训"/></a></li>
+                <li><a href="#"><img src="img/ico_7.jpg" alt="妙味课堂富有人性化的IT培训"/></a></li>
+                <li><a href="#"><img src="img/ico_8.jpg" alt="妙味课堂富有人性化的IT培训"/></a></li>
+                <li><a href="#"><img src="img/ico_9.jpg" alt="妙味课堂富有人性化的IT培训"/></a></li>
+                <li><a href="#"><img src="img/ico_10.jpg" alt="妙味课堂富有人性化的IT培训"/></a></li>
+                <li><a href="#"><img src="img/ico_11.jpg" alt="妙味课堂富有人性化的IT培训"/></a></li>
+                <li><a href="#"><img src="img/ico_12.jpg" alt="妙味课堂富有人性化的IT培训"/></a></li>
+                <li><a href="#"><img src="img/ico_13.jpg" alt="妙味课堂富有人性化的IT培训"/></a></li>
+                <li><a href="#"><img src="img/ico_14.jpg" alt="妙味课堂富有人性化的IT培训"/></a></li>
+            </ul>
+        </div>
+        <a href="#" id="btn_prev" class="btn"></a>
+		<a href="#" id="btn_next" class="btn showBtn"></a>
+        
+    </div>
+    
+</body>
+</html>
